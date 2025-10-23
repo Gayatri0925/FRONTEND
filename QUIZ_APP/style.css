@@ -1,0 +1,5 @@
+body { display:flex; justify-content:center; align-items:center; height:100vh; font-family:Arial; background:#f5f5f5; }
+.quiz-container { background:#fff; padding:30px; border-radius:10px; box-shadow:0 0 15px rgba(0,0,0,0.1); width:300px; text-align:center; }
+button { padding:8px 12px; margin-top:10px; border:none; border-radius:5px; background:#00bfff; color:#fff; cursor:pointer; }
+.option { background:#eee; padding:8px; margin:5px 0; border-radius:5px; cursor:pointer; }
+.option:hover { background:#00bfff; color:#fff; }
