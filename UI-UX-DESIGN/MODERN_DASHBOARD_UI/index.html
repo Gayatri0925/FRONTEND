@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard UI</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2 class="logo">Insight</h2>
+      <ul>
+        <li class="active">🏠 Dashboard</li>
+        <li>📈 Analytics</li>
+        <li>👤 Profile</li>
+        <li>⚙️ Settings</li>
+        <li>🚪 Logout</li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <header>
+        <h1>Dashboard Overview</h1>
+        <input type="text" placeholder="Search...">
+      </header>
+
+      <!-- Cards -->
+      <section class="cards">
+        <div class="card">
+          <h3>Users</h3>
+          <p>1,248</p>
+        </div>
+        <div class="card">
+          <h3>Revenue</h3>
+          <p>$23,400</p>
+        </div>
+        <div class="card">
+          <h3>Active Sessions</h3>
+          <p>312</p>
+        </div>
+      </section>
+
+      <!-- Chart -->
+      <section class="chart-section">
+        <canvas id="myChart"></canvas>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

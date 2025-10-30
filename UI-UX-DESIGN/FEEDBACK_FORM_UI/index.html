@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback Form UI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>💬 We Value Your Feedback</h2>
+    <p class="subtitle">Tell us how was your experience</p>
+
+    <!-- Emoji Rating -->
+    <div class="emoji-rating">
+      <span class="emoji" data-value="1">😡</span>
+      <span class="emoji" data-value="2">😕</span>
+      <span class="emoji" data-value="3">😐</span>
+      <span class="emoji" data-value="4">😊</span>
+      <span class="emoji" data-value="5">😍</span>
+    </div>
+
+    <!-- Text Input -->
+    <textarea id="feedback" placeholder="Write your feedback..."></textarea>
+
+    <button id="submitBtn">Submit Feedback</button>
+
+    <p class="thankyou hidden">✅ Thank you for your feedback!</p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
