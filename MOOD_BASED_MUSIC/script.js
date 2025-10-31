@@ -6,7 +6,7 @@ const songTitle = document.getElementById('songTitle');
 const player = document.getElementById('player');
 
 // 🔑 Replace with YOUR YouTube API Key
-const YOUTUBE_API_KEY = "AIzaSyBdNUTGRUBA6LT15-aaeBdzdmGIegZU2SU";
+const YOUTUBE_API_KEY = "Your YouTube API";
 
 // Face API model source
 const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models/';
@@ -115,3 +115,4 @@ async function runDetection() {
   await startCamera();
   runDetection();
 })();
+
