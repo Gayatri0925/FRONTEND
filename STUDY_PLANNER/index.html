@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FocusFlow – Smart Study Planner</title>
+
+  <!-- Chart.js for visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(-45deg, #89f7fe, #66a6ff, #8e9eab, #eef2f3);
+      background-size: 400% 400%;
+      animation: gradientMove 10s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-y: auto;
+      color: #222;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    body.dark {
+      background: linear-gradient(-45deg, #1f1c2c, #928dab, #0f2027, #203a43);
+      color: #f3f3f3;
+    }
+
+    .container {
+      width: 430px;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(20px);
+      border-radius: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      padding: 2rem;
+      text-align: center;
+      margin: 2rem;
+      color: #fff;
+    }
+
+    body.dark .container {
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+
+    .toggle-theme {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.3);
+      border: none;
+      border-radius: 20px;
+      padding: 0.4rem 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    body.dark .toggle-theme {
+      background: rgba(0, 0, 0, 0.4);
+      color: #f3f3f3;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 500;
+      color: #fff;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.6rem;
+      border: none;
+      border-radius: 10px;
+      margin-top: 0.3rem;
+      font-size: 1rem;
+      outline: none;
+      color: #333;
+    }
+
+    button {
+      background: #fff;
+      color: #333;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 0.5rem;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #eaeaea;
+      transform: scale(1.05);
+    }
+
+    .output {
+      margin-top: 1.5rem;
+      text-align: left;
+      font-size: 0.9rem;
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      padding: 1rem;
+      max-height: 300px;
+      overflow-y: auto;
+      color: #fff;
+    }
+
+    canvas {
+      margin-top: 1rem;
+      max-width: 200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .tip, .quote {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      text-align: center;
+      font-style: italic;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.2);
+      margin: 0.6rem 0;
+    }
+  </style>
+</head>
+<body>
+  <button class="toggle-theme" onclick="toggleTheme()">🌙 Dark</button>
+
+  <div class="container" id="planner">
+    <h1>🎯 FocusFlow</h1>
+    <p>Your Smart Daily Study Planner</p>
+
+    <label>Subjects (comma separated):</label>
+    <input type="text" id="subjects" placeholder="DBMS, OS, CN">
+
+    <label>Total Study Hours per Day:</label>
+    <input type="number" id="hours" placeholder="e.g. 8">
+
+    <label>Days Left for Exam:</label>
+    <input type="number" id="days" placeholder="e.g. 10">
+
+    <div>
+      <button onclick="generatePlan()">Generate Plan</button>
+      <button onclick="savePDF()">Save as PDF</button>
+    </div>
+
+    <canvas id="studyChart"></canvas>
+
+    <div class="output" id="plan"></div>
+    <div class="tip" id="tip"></div>
+    <div class="quote" id="quote"></div>
+  </div>
+
+  <script>
+    let chart;
+
+    const tips = [
+      "💧 Stay hydrated! Drink water every 45 minutes.",
+      "🧘 Take deep breaths to refresh your mind.",
+      "🌿 Stretch for 5 minutes after every 2 hours.",
+      "📵 Keep your phone on silent while studying.",
+      "😴 Don’t forget 7 hours of sleep for better focus."
+    ];
+
+    const quotes = [
+      "“Discipline is doing what needs to be done, even when you don’t feel like it.”",
+      "“Small progress is still progress.”",
+      "“You don’t need to be extreme, just consistent.”",
+      "“Push yourself, because no one else is going to do it for you.”",
+      "“Focus on progress, not perfection.”"
+    ];
+
+    function generatePlan() {
+      const subjects = document.getElementById("subjects").value.split(",").map(s => s.trim()).filter(s => s);
+      const hours = parseFloat(document.getElementById("hours").value);
+      const days = parseInt(document.getElementById("days").value);
+
+      if (!subjects.length || !hours || !days) {
+        document.getElementById("plan").innerHTML = "⚠️ Please fill all fields correctly!";
+        return;
+      }
+
+      const studyBlocks = Math.floor(hours / 1.5);
+      const breakTime = 0.25; // 15 min breaks
+      const totalBreaks = studyBlocks - 1;
+      const totalBreakHours = totalBreaks * breakTime;
+      const dailyStudy = hours - totalBreakHours;
+      const hoursPerSubject = dailyStudy / subjects.length;
+
+      let planHTML = `<h3>🗓️ Your ${days}-Day Study Plan</h3>`;
+      planHTML += `<p>📚 ${studyBlocks} study blocks/day (${hoursPerSubject.toFixed(1)} hrs per subject)</p>`;
+
+      for (let d = 1; d <= days; d++) {
+        planHTML += `<h4>📅 Day ${d}</h4><ul>`;
+        subjects.forEach(subj => {
+          planHTML += `<li>${subj}: ${hoursPerSubject.toFixed(1)} hrs</li>`;
+        });
+        planHTML += `<li>☕ ${totalBreaks} breaks (${(breakTime*60).toFixed(0)} mins each)</li></ul><hr>`;
+      }
+
+      document.getElementById("plan").innerHTML = planHTML;
+      document.getElementById("tip").innerText = tips[Math.floor(Math.random() * tips.length)];
+      document.getElementById("quote").innerText = quotes[Math.floor(Math.random() * quotes.length)];
+
+      renderChart(dailyStudy, totalBreakHours);
+    }
+
+    function renderChart(studyHours, breakHours) {
+      const ctx = document.getElementById("studyChart").getContext("2d");
+      if (chart) chart.destroy();
+
+      chart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: ["Study Time", "Break Time"],
+          datasets: [{
+            data: [studyHours, breakHours],
+            backgroundColor: ["#00c6ff", "#fbc531"],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          plugins: {
+            legend: { position: "bottom", labels: { color: "#fff" } }
+          }
+        }
+      });
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark");
+      const btn = document.querySelector(".toggle-theme");
+      btn.textContent = document.body.classList.contains("dark") ? "🌞 Light" : "🌙 Dark";
+    }
+
+    function savePDF() {
+      const element = document.getElementById("planner");
+      const opt = {
+        margin: 0.5,
+        filename: 'FocusFlow_Study_Plan.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+  </script>
+</body>
+</html>
